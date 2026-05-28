@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum QuestionType {
+  MCQ
+  NUMERIC
+  TRUE_FALSE
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  school    String?
+  createdAt DateTime @default(now())
+  results   Result[]
+}
+
+model Exam {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  duration  Int
+  subjects  String[]
+  createdAt DateTime   @default(now())
+  questions Question[]
+  results   Result[]
+}
+
+model Question {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  examId    String       @db.ObjectId
+  exam      Exam         @relation(fields: [examId], references: [id], onDelete: Cascade)
+  subject   String
+  type      QuestionType
+  question  String
+  options   String[]
+  answer    String
+  tolerance Float?
+  marks     Int          @default(1)
+}
+
+model Result {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @db.ObjectId
+  examId           String   @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam             Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  score            Float
+  percentage       Float
+  timeSpent        Int
+  subjectBreakdown Json
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, examId])
+}
