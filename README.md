@@ -64,7 +64,7 @@ Open `http://localhost:3000`.
 
 Created by `npm run seed`:
 
-- Admin: `admin@stemcbt.local` / `admin12345`
+- Admin: `admin@stemcbt.local` / value of `ADMIN_PASSWORD`
 - Student: `student@stemcbt.local` / `student12345`
 
 ## Question Upload
